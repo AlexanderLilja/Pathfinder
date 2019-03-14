@@ -19,8 +19,8 @@ public class Pathfinder {
    
     public static void main(String[] args) {
         // TODO code application logic here
-        HashMap<String, Node> node = new HashMap(Node.createGraph());
-        Node.showNodesAndLinks(node);
+        HashMap<String, Node> node = Draw.createGraph();
+        Draw.showNodesAndLinks(node);
         
     }
     
