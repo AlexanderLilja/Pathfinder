@@ -1,8 +1,10 @@
 package pathfinder;
 import java.util.*;
 
-
-
+/**
+ *
+ * @author Alexander
+ */
 public class Node {
     
     //      --------------------------------

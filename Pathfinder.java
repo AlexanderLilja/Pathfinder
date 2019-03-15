@@ -18,9 +18,66 @@ public class Pathfinder {
      */
    
     public static void main(String[] args) {
-        // TODO code application logic here
+        
+        //INITIALISING SCANNER
+        Scanner input = new Scanner(System.in);
+        Calc calc = new Calc();
+        
+        //STORING NODES 
         HashMap<String, Node> node = Draw.createGraph();
-        Draw.showNodesAndLinks(node);
+        Node start_ = calc.start;
+        Node goal_ = calc.goal;
+        
+        boolean quit = false;
+        
+        //      --------
+        //      CLI LOOP
+        //      --------
+        while(!quit){
+            System.out.println("----------------------------");
+            System.out.println("Pathfinder");
+            System.out.println("----------------------------");
+            System.out.println("1. Show All Stations");
+            System.out.println("2. Calculate Route");
+            System.out.println("3. Exit.");
+            
+            int selected = input.nextInt();
+            
+            switch(selected) {
+                case 1: 
+                    Draw.showNodesAndLinks(node);
+                    
+                    break;
+                case 2:
+                    
+                    System.out.println("\nPlease Select Start Location: \n");
+                    node.keySet().forEach((_start) -> {
+                        System.out.println(_start + "\n");
+                    });
+                    String start = input.next();
+                    System.out.println("\nPlease Select Destination: \n");
+                    node.keySet().forEach((_dest) -> {
+                        System.out.println(_dest + "\n");
+                    }) ;
+                    String dest = input.next();
+                    Node source = node.get(start);
+                    Node destination = node.get(dest);
+                    calc.getRoute(source, destination);
+                    
+                     
+                    
+                    
+                    //System.out.println("\nFrom: " + start + " to: " + dest);
+                    break;
+                case 3:
+                    quit = true;
+                    break;
+                default:
+                    System.out.println("Invalid Selection");
+                    break;
+            }   
+        }  
+       
         
     }
     
