@@ -25,8 +25,7 @@ public class Pathfinder {
         
         //STORING NODES 
         HashMap<String, Node> node = Draw.createGraph();
-        Node start_ = calc.start;
-        Node goal_ = calc.goal;
+        
         
         boolean quit = false;
         
@@ -62,7 +61,7 @@ public class Pathfinder {
                     String dest = input.next();
                     Node source = node.get(start);
                     Node destination = node.get(dest);
-                    calc.getRoute(source, destination);
+                    List path = calc.getRoute(source, destination);
                     
                      
                     

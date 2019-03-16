@@ -5,7 +5,7 @@ import java.util.*;
  *
  * @author Alexander
  */
-public class Node {
+public class Node implements Comparable {
     
     //      --------------------------------
     //      BASIC VARIABLES NEEDED FOR NODES
@@ -14,14 +14,26 @@ public class Node {
     private double lat;
     private double lon;
     public HashMap<String, Node> neighbours = new HashMap<>();
+    Node previous;
+    
+    Calc calc = new Calc();
     
     //      -----------
     //      CONSTRUCTOR
     //      -----------
     public Node(String name, double latitude, double longitude){
-        setName(name);
-        setLatitude(latitude);
-        setLongitude(longitude);
+        this.name = name;
+        this.lat = latitude;
+        this.lon = longitude;
+    }
+    
+    @Override
+    public int compareTo(Object other){
+        double currentValue = calc.Score();
+        double otherValue = ((Node)other).calc.Score();
+        
+        double value = currentValue - otherValue;
+        return(value > 0)?1:(value<0)?-1:0; //SIGN FUNCTION
     }
     
     //      --------------------------------------
@@ -29,30 +41,18 @@ public class Node {
     //      --------------------------------------
     
     //  NAME METHODS
-    //SET METHOD FOR NAME
-    public void setName(String name){
-        this.name = name;
-    }
-     //GET METHOD FOR NAME
+    //GET METHOD FOR NAME
     public String getName(){
         return name;
     }
     
     //  LATITUDE METHODS
-    //SET METHOD FOR LATITUDE
-    public void setLatitude(double latitude){
-        this.lat = latitude;
-    }
     //GET METHOD FOR LATITUDE
     public double getLatitude(){
         return lat;
     }
     
     //  LONGITUDE METHODS
-    //SET METHOD FOR LONGITUDE
-    public void setLongitude(double longitude){
-        this.lon = longitude;
-    }
     //GET METHOD FOR LONGITUDE
     public double getLongitude(){
         return lon;
@@ -67,5 +67,6 @@ public class Node {
     public HashMap<String, Node> getNeighbours(){
         return neighbours;
     }
+    
     
 }

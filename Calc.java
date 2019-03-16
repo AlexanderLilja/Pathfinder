@@ -5,7 +5,12 @@
  */
 package pathfinder;
 
+
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+
 
 
 /**
@@ -17,11 +22,9 @@ public class Calc {
     //      ---------------------------------------------------
     //      DEFINING NEW MAPS AND VARIABLES NEEDED IN ALGORITHM
     //      --------------------------------------------------- 
-    public Node start;
-    public Node goal;
     public Node current;
-    public Node previous;
-    
+    public Node goal;
+    public Node start;
     
     //      ---------------------------
     //      CALCULATION FOR H & G COSTS
@@ -34,8 +37,8 @@ public class Calc {
         
         while(!(_start == _current)){
             
-            g_cost += calcDistance(previous.getLongitude(), previous.getLatitude(), _current.getLongitude(), _current.getLatitude());
-            _current = current;
+            g_cost += calcDistance(_current.previous.getLongitude(), _current.previous.getLatitude(), _current.getLongitude(), _current.getLatitude());
+            _current = _current.previous;
         } 
             
         return g_cost;
@@ -46,7 +49,7 @@ public class Calc {
         double h_cost;
         Node _current = this.current;
         
-        if (!(_current == _goal)) {
+        if (!(_goal == _current)) {
             
             h_cost = calcDistance(_current.getLongitude(), _current.getLatitude(), _goal.getLongitude(), _goal.getLatitude());
             
@@ -55,9 +58,9 @@ public class Calc {
         return h_cost;
     }
    
-    //CALCULATES THE TOTAL SCORE FOR EACH NODE/STATION
-    public double Score(double h, double g){
-        return h + g;
+     //CALCULATES THE TOTAL SCORE FOR EACH NODE/STATION
+    public double Score(){
+        return H_Cost(goal) + G_Cost(start);
     }
     
     //      ---------------------------
@@ -80,66 +83,93 @@ public class Calc {
         return km;
     }
     
-    //      ------------------
-    //      A*STAR CALCULATION
-    //      ------------------
-    public HashMap<String, Node> getRoute(Node _start, Node _goal){
+   //CREATING A PRIORITYQUEUE THAT AUTOMATICALLY ORDERS NODES BY PRIORITY
+    //HIGHEST PRIORITY IS FIRST IN LIST
+    public static class PriorityList extends LinkedList {
         
-        //  DEFINING VARIABLES NEEDED FOR ALGORITHM
-        //MAPS FOR KEEPING TRACK OF OPENED AND CLOSED NODES
-        HashMap<String, Node> open = new HashMap();
-        HashMap<String, Node> closed = new HashMap();
-        Node _current = this.start;
-        boolean done = false;
-        
-        
-        //HERE WE GO
-        while(!done){
-            
-            double minF = 0;
-            Node next = null;
-         
-            //LOOPING THROUGH NEIGHBOUR MAP
-            for(int i = 0; i <= _current.neighbours.size(); i++){
-                
-                _current.neighbours.keySet().stream().filter((names) -> (!(open.containsKey(names)) && !(closed.containsKey(names)))).forEachOrdered((names) -> {
-                    open.put(names, _current.neighbours.get(names));
-                });
-                
-                previous.neighbours = _current.neighbours;
-            }
-            
-            while(!(open.isEmpty())){
-                
-                if(_current == _goal){
-                    done = true;
-                    break;
-                } else {
-                    double f = Score(H_Cost(_goal), G_Cost(_start));
-                    
-                    if(minF == 0 || minF > f){
-                        minF = f;
-                        next = current;
-                    }
+        public void add(Comparable object){
+            for (int i = 0; i<size(); i++) {
+                if(object.compareTo(get(i)) <= 0) {
+                    add(i, object);
+                    return;
                 }
             }
-            if(done) {
-            } else {
-                current = next;
-                closed.put(current.getName(), current);
-                open.remove(current);
-            }
+            addLast(object);
         }
-        
-        HashMap<String, Node> route = new HashMap();
-        current = _goal;
-        
-        while(current != _start){
-            route.put(current.getName() ,current);
-            current = previous;
+    }
+    
+    //RECONSTRUCT PATH, BUT SKIPPING START NODE
+    protected List reConstructPath(Node node){
+        LinkedList route = new LinkedList();
+        while(node.previous != null) {
+            route.addFirst(node);
+            node = node.previous;
         }
-        
         return route;
+    }
+    
+    //GET ROUTE FROM START TO GOAL
+    //RETURNS A LIST OF NODES OR NULL IF NO PATH IS FOUND
+    public List getRoute(Node _start, Node goal){
+        
+        //CREATE OPEN AND CLOSED LISTS TO STORE NODES
+        PriorityList open = new PriorityList();
+        LinkedList closed = new LinkedList();
+        
+        //DEFINING COSTS FOR START NODE/STATION
+        start = _start;
+        current = _start;
+        double costFromStart = 0;
+        double costToGoal = H_Cost(goal);
+        _start.previous = null;
+        open.add(_start);
+        
+        //LOOPING THROUGH ENTRIES AS LONG AS OPEN LIST IS NOT EMPTY
+        while(!open.isEmpty()) {
+            //DELETE CURRENT NODE FROM OPEN LIST (THAT HAS SMALLEST COST)
+            current = (Node)open.removeFirst();
+            //IF WE HAVE REACHED THE GOAL WE NEED TO RECONSTRUCT THE PATH FROM 
+            // START TO GOAL
+            if(current == goal){
+                
+                return reConstructPath(goal);
+            }
+            
+            HashMap <String, Node> neighbours = current.getNeighbours();
+            for(String key : neighbours.keySet()) {
+                
+                //GET NEIGHBOURING/CHILD CITIES
+                Node childNode = (Node)neighbours.get(key);
+                double costStart = costFromStart + G_Cost(childNode);
+                
+                
+                //CHECK IF THE NEIGHBOUR NODE HAS ALREADY BEEN COUNTED FOR 
+                //OR IF A SHORTER ROUTE IS AVAILABLE
+                if((!open.contains(childNode) && !closed.contains(childNode)) || costStart < costFromStart) {
+                    
+                    //SET PARENT NODES DATA
+                    childNode.previous = current;
+                    costFromStart = costStart;
+                    costToGoal = H_Cost(goal);
+                    
+                    //IF NEIGHBOUR/CHILD IS FOUND IN CLOSED LIST
+                    //REMOVE 
+                    if(closed.contains(childNode)){
+                        closed.remove(childNode);
+                    }
+                    //IF NEIGHBOUR/CHILD IS NOT IN OPEN LIST
+                    //ADD
+                    if(!open.contains(childNode)){
+                        open.add(childNode);
+                    }
+                    
+                }
+   
+            }
+            closed.add(current);
+        }
+        // IF NO PATH IS FOUND
+        return null;
     }
     
 }
