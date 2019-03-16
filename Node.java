@@ -10,9 +10,11 @@ public class Node implements Comparable {
     //      --------------------------------
     //      BASIC VARIABLES NEEDED FOR NODES
     //      --------------------------------
-    private String name;
-    private double lat;
-    private double lon;
+    public String name;
+    public double lat;
+    public double lon;
+    public double costFromStart;
+    public double costToGoal;
     public HashMap<String, Node> neighbours = new HashMap<>();
     Node previous;
     
@@ -29,16 +31,27 @@ public class Node implements Comparable {
     
     @Override
     public int compareTo(Object other){
-        double currentValue = calc.Score();
-        double otherValue = ((Node)other).calc.Score();
+        double currentValue = Score(costFromStart, costToGoal);
+        double otherValue = ((Node)other).Score(costFromStart, costToGoal);
         
         double value = currentValue - otherValue;
         return(value > 0)?1:(value<0)?-1:0; //SIGN FUNCTION
-    }
+    }   
     
     //      --------------------------------------
     //      GET & SET METHODS USED FOR CONSTRUCTOR
     //      --------------------------------------
+       
+     //CALCULATES THE TOTAL SCORE FOR EACH NODE/STATION
+    public double Score(double gcost, double hcost){
+        return gcost + hcost;
+    }
+    public void set_gcost(double gcost){
+        this.costToGoal = gcost;
+    }
+    public void set_hcost(double hcost){
+        this.costFromStart = hcost;
+    }
     
     //  NAME METHODS
     //GET METHOD FOR NAME

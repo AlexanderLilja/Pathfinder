@@ -22,19 +22,19 @@ public class Draw {
         //CREATES A NEW NODE FOR EACH STATION
         Node hki = new Node("Helsingfors", 60.1640504, 24.7600896);    
         Node tpe = new Node("Tammerfors", 61.6277369, 23.5501169);     
-        Node tku = new Node("Åbo", 60.4327477, 22.0853171);            
+        Node tku = new Node("Abo", 60.4327477, 22.0853171);            
         Node jyv = new Node("Jyväskylä", 62.1373432, 25.0954598);      
         Node kpo = new Node("Kuopio", 62.9950487, 26.556762);          
         Node lhi = new Node("Lahtis", 60.9948736, 25.5747703);         
              
         //ADDS CONNECTIONS FOR HELSINKI 
         hki.addNeighbours("Tammerfors", tpe); //Tammerfors
-        hki.addNeighbours("Åbo", tku); //Åbo
+        hki.addNeighbours("Abo", tku); //Åbo
         hki.addNeighbours("Lahtis", lhi); //Lahtis
        
         //ADDS CONNECTIONS FOR TAMPERE
         tpe.addNeighbours("Helsingfors", hki); //Helsingfors
-        tpe.addNeighbours("Åbo", tku); //Åbo
+        tpe.addNeighbours("Abo", tku); //Åbo
         tpe.addNeighbours("Jyväskylä", jyv); //Jyväskylä
         tpe.addNeighbours("Lahtis", lhi); //Lahtis
         
@@ -57,7 +57,7 @@ public class Draw {
         HashMap<String, Node> graph = new HashMap();
         graph.put("Helsingfors", hki);
         graph.put("Tammerfors", tpe);
-        graph.put("Åbo", tku);
+        graph.put("Abo", tku);
         graph.put("Jyväskylä", jyv);
         graph.put("Kuopio", kpo);
         graph.put("Lahtis", lhi);

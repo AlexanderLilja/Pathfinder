@@ -61,10 +61,10 @@ public class Pathfinder {
                     String dest = input.next();
                     Node source = node.get(start);
                     Node destination = node.get(dest);
-                    List path = calc.getRoute(source, destination);
-                    
-                     
-                    
+                    List<Node> path = calc.getRoute(source, destination);
+                    for(int i = 0; i < path.size(); i++) {
+                        System.out.println(i + 1 + " " + path.get(i).getName());
+                    }
                     
                     //System.out.println("\nFrom: " + start + " to: " + dest);
                     break;
