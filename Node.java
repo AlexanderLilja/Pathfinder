@@ -15,6 +15,7 @@ public class Node implements Comparable {
     public double lon;
     public double costFromStart;
     public double costToGoal;
+    
     public HashMap<String, Node> neighbours = new HashMap<>();
     Node previous;
     
@@ -31,8 +32,8 @@ public class Node implements Comparable {
     
     @Override
     public int compareTo(Object other){
-        double currentValue = Score(costFromStart, costToGoal);
-        double otherValue = ((Node)other).Score(costFromStart, costToGoal);
+        double currentValue = Score(costToGoal, costFromStart);
+        double otherValue = ((Node)other).Score(costToGoal, costFromStart);
         
         double value = currentValue - otherValue;
         return(value > 0)?1:(value<0)?-1:0; //SIGN FUNCTION
@@ -43,14 +44,14 @@ public class Node implements Comparable {
     //      --------------------------------------
        
      //CALCULATES THE TOTAL SCORE FOR EACH NODE/STATION
-    public double Score(double gcost, double hcost){
-        return gcost + hcost;
+    public double Score(double h, double g){
+        return h + g;
     }
     public void set_gcost(double gcost){
         this.costToGoal = gcost;
     }
     public void set_hcost(double hcost){
-        this.costFromStart = hcost;
+        this.costToGoal = hcost;
     }
     
     //  NAME METHODS

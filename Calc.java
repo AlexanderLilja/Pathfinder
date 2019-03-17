@@ -55,41 +55,44 @@ public class Calc {
         
         //DEFINING COSTS FOR START NODE/STATION
        
-        double costFromStart = calcDistance(_start, _start);
-        double costToGoal = calcDistance(_start, goal);
-        _start.set_gcost(costFromStart);
-        _start.Score(costFromStart, costToGoal);
+        _start.costFromStart = calcDistance(_start, _start);
+        _start.costToGoal = calcDistance(_start, goal);
+     
         _start.previous = null;
         open.add(_start);
         
         //LOOPING THROUGH ENTRIES AS LONG AS OPEN LIST IS NOT EMPTY
         while(!open.isEmpty()) {
+            
             //DELETE CURRENT NODE FROM OPEN LIST (THAT HAS SMALLEST COST)
-            Node current = (Node)open.removeFirst();
+            Node current = (Node)open.getFirst();
+            open.remove(current);
+            
+            current.Score(current.costFromStart, current.costToGoal);
             //IF WE HAVE REACHED THE GOAL WE NEED TO RECONSTRUCT THE PATH FROM 
             // START TO GOAL
             if(current == goal){
-                
+                //BUILD PATH FROM GOAL TO START
                 return reConstructPath(goal);
             }
             
-            HashMap <String, Node> neighbours = current.getNeighbours();
+            HashMap<String, Node> neighbours = current.getNeighbours();
             for(String key : neighbours.keySet()) {
                 
                 //GET NEIGHBOURING/CHILD CITIES
                 Node childNode = (Node)neighbours.get(key);
-                double costStart = costFromStart + calcDistance(_start, current);
+                double tentative_Gcost = current.costFromStart + current.Score(childNode.costFromStart, childNode.costToGoal);
                 
                 
                 //CHECK IF THE NEIGHBOUR NODE HAS ALREADY BEEN COUNTED FOR 
                 //OR IF A SHORTER ROUTE IS AVAILABLE
-                if((!open.contains(childNode) && !closed.contains(childNode)) || costStart < current.costFromStart) {
+                if((!open.contains(childNode) && !closed.contains(childNode)) || tentative_Gcost < childNode.costFromStart) {
                     
                     //SET PARENT NODES DATA
                     childNode.previous = current;
-                    current.costFromStart = costStart;
-                    current.costToGoal = calcDistance(current, goal);
-                    
+                    childNode.costFromStart = tentative_Gcost;
+                    childNode.costToGoal = calcDistance(childNode, goal);
+                            
                     //IF NEIGHBOUR/CHILD IS FOUND IN CLOSED LIST
                     //REMOVE 
                     if(closed.contains(childNode)){
