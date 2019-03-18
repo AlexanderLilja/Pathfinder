@@ -6,138 +6,87 @@
 package pathfinder;
 
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-
-
+import java.util.ArrayList;
 
 /**
  *
  * @author Alexander
  */
 public class Calc {
-
-   //CREATING A PRIORITYQUEUE THAT AUTOMATICALLY ORDERS NODES BY PRIORITY
-    //HIGHEST PRIORITY IS FIRST IN LIST
-    public static class PriorityList extends LinkedList {
-        
-        public void add(Comparable object){
-            for (int i = 0; i<size(); i++) {
-                if(object.compareTo(get(i)) <= 0) {
-                    add(i, object);
-                    return;
-                }
-            }
-            addLast(object);
-        }
-    }
-    
-    //RECONSTRUCT PATH
-    public List reConstructPath(Node node){
-        
-        LinkedList route = new LinkedList();
-        while(node != null) {
-            route.addFirst(node);
-            node = node.previous;
-        }
-        return route;
-    }
-    
-    //GET ROUTE FROM START TO GOAL
-    //RETURNS A LIST OF NODES OR NULL IF NO PATH IS FOUND
-    public List getRoute(Node _start, Node goal){
-        
-        //CREATE OPEN AND CLOSED LISTS TO STORE NODES
-        PriorityList open = new PriorityList();
-        LinkedList closed = new LinkedList();
-        
-        //DEFINING COSTS FOR START NODE/STATION
-       
-        _start.costFromStart = calcDistance(_start, _start);
-        _start.costToGoal = calcDistance(_start, goal);
      
-        _start.previous = null;
+    //      --------------------------------------
+    //      A* ALGORITHM FINALLY WORKING ITS MAGIC
+    //      --------------------------------------
+    static void getRoute(Node _start, Node goal){
+        
+        System.out.println("");
+        System.out.println("Route from " + _start.getName() + " to " + goal.getName());
+        System.out.println("");
+        //CREATING OPEN AND CLOSED LISTS FOR KEEPING TRACK OF NODES
+        ArrayList<Node> open = new ArrayList<>();
+        ArrayList<Node> closed = new ArrayList<>();
         open.add(_start);
         
-        //LOOPING THROUGH ENTRIES AS LONG AS OPEN LIST IS NOT EMPTY
-        while(!open.isEmpty()) {
-            
-            //DELETE CURRENT NODE FROM OPEN LIST (THAT HAS SMALLEST COST)
-            Node current = (Node)open.getFirst();
-            open.remove(current);
-            
-            current.Score(current.costFromStart, current.costToGoal);
-            //IF WE HAVE REACHED THE GOAL WE NEED TO RECONSTRUCT THE PATH FROM 
-            // START TO GOAL
-            if(current == goal){
-                //BUILD PATH FROM GOAL TO START
-                return reConstructPath(goal);
+        //LOOPING THROUGH OPEN LIST AND GETTING VALUE WITH LOWEST TOTAL COST
+        while(open.size() > 0){
+            int lowest = 0;
+            for(int i = 0; i < open.size(); i++){
+                if(open.get(i).getTotalCost() < open.get(lowest).getTotalCost()){
+                    lowest = i;
+                }
             }
+            //INITIALIZING CURRENT AS NODE WITH LOWEST COST
+            Node current = open.get(lowest);
             
-            HashMap<String, Node> neighbours = current.getNeighbours();
-            for(String key : neighbours.keySet()) {
+            //REACHED GOAL IF CURRENT == GOAL
+            if(current == goal){
+                Draw.printRoute(current);
+                break;
+            }
+            //PRETTY STRAIGHTFORWARD JUST TO KEEP TRACK OF NODES
+            open.remove(current);
+            closed.add(current);
+            
+            //LOOP THROUGH NEIGHBOURS FOR THE CURRENT NODE
+            //UPDATING COSTS FOR EACH NODE THAT IS AVAILABLE
+            ArrayList<Node> neighbours = current.getNeighbours();
+            for(int i = 0; i < neighbours.size(); i++){
+                Node neighbour = neighbours.get(i);
                 
-                //GET NEIGHBOURING/CHILD CITIES
-                Node childNode = (Node)neighbours.get(key);
-                double tentative_Gcost = current.costFromStart + current.Score(childNode.costFromStart, childNode.costToGoal);
-                
-                
-                //CHECK IF THE NEIGHBOUR NODE HAS ALREADY BEEN COUNTED FOR 
-                //OR IF A SHORTER ROUTE IS AVAILABLE
-                if((!open.contains(childNode) && !closed.contains(childNode)) || tentative_Gcost < childNode.costFromStart) {
+                //UPDATE GCOST BY ADDING CURRENT GCOST PLUS ADDING COST FROM CURRENT TO NEIGHBOUR
+                if(!closed.contains(neighbour)){
+                    double gCost = current.getGcost() + current.calcDistance(neighbour);
                     
-                    //SET PARENT NODES DATA
-                    childNode.previous = current;
-                    childNode.costFromStart = tentative_Gcost;
-                    childNode.costToGoal = calcDistance(childNode, goal);
-                            
-                    //IF NEIGHBOUR/CHILD IS FOUND IN CLOSED LIST
-                    //REMOVE 
-                    if(closed.contains(childNode)){
-                        closed.remove(childNode);
+                    //CHECKING AND ADDING CHILD/NEIGHBOUR NODES TO OPEN
+                    if(!open.contains(neighbour)){
+                        open.add(neighbour);
+                    } else if (gCost >= neighbour.getGcost()){
+                        continue;
                     }
-                    //IF NEIGHBOUR/CHILD IS NOT IN OPEN LIST
-                    //ADD
-                    if(!open.contains(childNode)){
-                        open.add(childNode);
-                    }
+                    
+                    //AT THE END OF EACH LOOP SETTING COSTS FOR EACH NEIGHBOUR
+                    neighbour.set_gcost(gCost);
+                    double hCost = neighbour.calcDistance(goal);
+                    neighbour.set_hcost(hCost);
+                    //ALSO SETTING VALUE OF CURRENT TO PREVIOUS
+                    neighbour.setPrevious(current);
                     
                 }
-   
             }
-            closed.add(current);
+            
         }
-        // IF NO PATH IS FOUND
-        return null;
+        
+        
+        
+        
+
     }
-    //      ---------------------------
-    //      DISTANCE CALCULATION METHOD
-    //      ---------------------------
-    public double calcDistance(Node A, Node B) {
-        
-        double lon1 = A.getLongitude();
-        double lat1 = A.getLatitude();
-        double lon2 = B.getLongitude();
-        double lat2 = B.getLatitude();
-        lon1 = lon1*Math.PI/180.0;
-        lat1 = lat1*Math.PI/180.0;
-        lon2 = lon2*Math.PI/180.0;
-        lat2 = lat2*Math.PI/180.0;
-
-      
-        double dlon = lon2 - lon1;
-        double dlat = lat2 - lat1;
-        double a = Math.pow(Math.sin(dlat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2), 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double km = 6367 * c;
-
-        return km;
-    }    
-    
-        
-
-
-    
 }
+   
+
+    
+        
+
+
+    
+

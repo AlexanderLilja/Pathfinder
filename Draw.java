@@ -6,6 +6,7 @@
 package pathfinder;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  *
@@ -17,8 +18,9 @@ public class Draw {
     //      ------------
     //      GRAPH METHOD
     //      ------------
-    public static HashMap<String, Node> createGraph()
+    static HashMap<String, Node> createNodes()
     {
+        HashMap<String, Node> nodes = new HashMap<>();
         //CREATES A NEW NODE FOR EACH STATION
         Node hki = new Node("Helsingfors", 60.1640504, 24.7600896);    
         Node tpe = new Node("Tammerfors", 61.6277369, 23.5501169);     
@@ -28,60 +30,71 @@ public class Draw {
         Node lhi = new Node("Lahtis", 60.9948736, 25.5747703);         
              
         //ADDS CONNECTIONS FOR HELSINKI 
-        hki.addNeighbours("Tammerfors", tpe); //Tammerfors
-        hki.addNeighbours("Abo", tku); //Åbo
-        hki.addNeighbours("Lahtis", lhi); //Lahtis
+        hki.addNeighbours(tpe, tku, lhi);
        
         //ADDS CONNECTIONS FOR TAMPERE
-        tpe.addNeighbours("Helsingfors", hki); //Helsingfors
-        tpe.addNeighbours("Abo", tku); //Åbo
-        tpe.addNeighbours("Jyväskylä", jyv); //Jyväskylä
-        tpe.addNeighbours("Lahtis", lhi); //Lahtis
+        tpe.addNeighbours(hki, tku, jyv, lhi);
         
         //ADDS CONNECTIONS FOR TURKU
-        tku.addNeighbours("Helsingfors", hki); //Helsingfors
-        tku.addNeighbours("Tammerfors", tpe); //Tammerfors
+        tku.addNeighbours(hki, tpe);
          
         //ADDS CONNECTIONS FOR JYVÄSKYLÄ 
-        jyv.addNeighbours("Tammerfors", tpe); //Tammerfors
+        jyv.addNeighbours(tpe);
         
         //ADDS CONNECTIONS FOR KUOPIO
-        kpo.addNeighbours("Lahtis", lhi); //Lahtis
+        kpo.addNeighbours(lhi);
         
         //ADDS CONNECTIONS FOR LAHTI
-        lhi.addNeighbours("Helsingfors", hki); //Helsingors
-        lhi.addNeighbours("Tammerfors", tpe); //Tammerfors
-        lhi.addNeighbours("Kuopio", kpo); //Kuopio
-                
-        //CREATES A HASHMAP FOR THE GRAPH
-        HashMap<String, Node> graph = new HashMap();
-        graph.put("Helsingfors", hki);
-        graph.put("Tammerfors", tpe);
-        graph.put("Abo", tku);
-        graph.put("Jyväskylä", jyv);
-        graph.put("Kuopio", kpo);
-        graph.put("Lahtis", lhi);
+        lhi.addNeighbours(hki, tpe, kpo);                
         
-        return graph;
+        nodes.put(hki.getName(), hki);
+        nodes.put(tpe.getName(), tpe);
+        nodes.put(tku.getName(), tku);
+        nodes.put(jyv.getName(), jyv);
+        nodes.put(kpo.getName(), kpo);
+        nodes.put(lhi.getName(), lhi);
+        
+        return nodes;
     }
     
     //      ---------------------------------------------------
     //      PRINT METHOD FOR SEEING THE STATIONS AND NEIGHBOURS
     //      ---------------------------------------------------
-    public static void showNodesAndLinks(HashMap<String, Node> node){
+    static void showNodesAndLinks(HashMap<String, Node> node){
         
-        //LOOP THROUGH NODE KEYS
-        node.keySet().stream().map((key) -> {
-            System.out.println(key);
-            return key;
-            //LOOP THROUGH NEIGHBOUR NODE KEYS
-        }).map((key) -> node.get(key).getNeighbours()).forEachOrdered((close) -> {
-            close.keySet().forEach((i) -> {
-                System.out.println("    " + i);
-            });
-        });  
+        for(String keys : node.keySet()){
+            
+            //PRINTING OUT NODES
+            System.out.print("\n" + keys + "\n");
+            //PRINTING OUT NEIGHBOUR NODES
+            for(Node neighbour : node.get(keys).getNeighbours()){
+                System.out.println("    " + neighbour.getName());
+                
+            }
+        }
+        System.out.print("\n");
         
         
     }
-  
+    
+    //      -------------------------------
+    //      PRINT METHOD FOR PRINTING ROUTE
+    //      -------------------------------
+    static void printRoute(Node current){
+        
+        //CREATING ARRAYLIST FOR STORING PATH
+        LinkedList<Node> route = new LinkedList();
+        
+        while(current != null){
+            route.addFirst(current);
+            current = current.getPrevious();
+        }
+        
+        for(int i = 0; i < route.size(); i++){
+            
+            System.out.println(i + 1 + ". " + route.get(i).getName());
+       
+        }
+        System.out.print("\n");
+    }
 }

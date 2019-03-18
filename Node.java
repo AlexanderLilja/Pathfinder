@@ -5,81 +5,108 @@ import java.util.*;
  *
  * @author Alexander
  */
-public class Node implements Comparable {
+public class Node {
     
     //      --------------------------------
     //      BASIC VARIABLES NEEDED FOR NODES
     //      --------------------------------
-    public String name;
-    public double lat;
-    public double lon;
-    public double costFromStart;
-    public double costToGoal;
+    private String name;
+    private double latitude;
+    private double longitude;
+    private double gCost;
+    private double hCost;
+    private double totalCost;
+    private Node previous;
+    private ArrayList<Node> neighbours;
     
-    public HashMap<String, Node> neighbours = new HashMap<>();
-    Node previous;
-    
-    Calc calc = new Calc();
     
     //      -----------
     //      CONSTRUCTOR
     //      -----------
     public Node(String name, double latitude, double longitude){
         this.name = name;
-        this.lat = latitude;
-        this.lon = longitude;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.totalCost = 0;
+        this.gCost = 0;
+        this.hCost = 0;
+        this.neighbours = new ArrayList<>();
+        this.previous = null;
     }
     
-    @Override
-    public int compareTo(Object other){
-        double currentValue = Score(costToGoal, costFromStart);
-        double otherValue = ((Node)other).Score(costToGoal, costFromStart);
-        
-        double value = currentValue - otherValue;
-        return(value > 0)?1:(value<0)?-1:0; //SIGN FUNCTION
-    }   
     
     //      --------------------------------------
     //      GET & SET METHODS USED FOR CONSTRUCTOR
     //      --------------------------------------
-       
-     //CALCULATES THE TOTAL SCORE FOR EACH NODE/STATION
-    public double Score(double h, double g){
-        return h + g;
-    }
-    public void set_gcost(double gcost){
-        this.costToGoal = gcost;
-    }
-    public void set_hcost(double hcost){
-        this.costToGoal = hcost;
-    }
-    
-    //  NAME METHODS
-    //GET METHOD FOR NAME
+
     public String getName(){
         return name;
     }
-    
-    //  LATITUDE METHODS
-    //GET METHOD FOR LATITUDE
+
     public double getLatitude(){
-        return lat;
+        return latitude;
     }
-    
-    //  LONGITUDE METHODS
-    //GET METHOD FOR LONGITUDE
+
     public double getLongitude(){
-        return lon;
+        return longitude;
     }
     
-    //  NEIGHBOUR METHODS
-    //ADD NEIGHBOUR NODES
-    public void addNeighbours(String key, Node neighbours){
-        this.neighbours.put(key, neighbours);
+    public double getTotalCost(){
+        return totalCost;
     }
-    //GET METHOD FOR NEIGHBOUR NODES
-    public HashMap<String, Node> getNeighbours(){
-        return neighbours;
+    
+    public void updateTotalCost(){
+        this.totalCost = this.gCost + this.hCost;
+    }
+    
+    public double getGcost(){
+        return gCost;
+    }
+    
+    public void set_gcost(double gcost){
+        this.gCost = gcost;
+        this.updateTotalCost();
+    }
+    
+    public void set_hcost(double hcost){
+        this.hCost = hcost;
+        this.updateTotalCost();
+    }
+
+    public void setPrevious(Node previous){
+        this.previous = previous;
+    }
+    
+    public Node getPrevious(){
+        return this.previous;
+    }
+
+    public void addNeighbours(Node ...n){
+        for(Node node : n)
+        this.neighbours.add(node);
+    }
+
+    public ArrayList<Node> getNeighbours(){
+        return this.neighbours;
+    }
+    
+    //      -----------------------------------------------
+    //      METHOD USED FOR GETTING GCOST & HCOST FOR NODES
+    //      -----------------------------------------------
+    public double calcDistance(Node target){
+
+        double lon1 = this.longitude * Math.PI/180.0;
+        double lat1 = this.latitude * Math.PI/180.0;
+        double lon2 = target.getLongitude() * Math.PI/180.0;
+        double lat2 = target.getLatitude() * Math.PI/180.0;
+
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dlat/2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double km = 6367 * c;
+
+        return km;
     }
     
     

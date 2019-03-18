@@ -21,10 +21,9 @@ public class Pathfinder {
         
         //INITIALISING SCANNER
         Scanner input = new Scanner(System.in);
-        Calc calc = new Calc();
         
         //STORING NODES 
-        HashMap<String, Node> node = Draw.createGraph();
+        HashMap<String, Node> node = Draw.createNodes();
         
         
         boolean quit = false;
@@ -45,28 +44,22 @@ public class Pathfinder {
             switch(selected) {
                 case 1: 
                     Draw.showNodesAndLinks(node);
-                    
                     break;
                 case 2:
-                    
-                    System.out.println("\nPlease Select Start Location: \n");
-                    node.keySet().forEach((_start) -> {
-                        System.out.println(_start + "\n");
+                    System.out.print("\n");
+                    node.keySet().forEach((i) -> {
+                        System.out.print(i + "\n");
                     });
+                    System.out.print("\n");
+                    System.out.println("Please Enter Start Location: ");
                     String start = input.next();
-                    System.out.println("\nPlease Select Destination: \n");
-                    node.keySet().forEach((_dest) -> {
-                        System.out.println(_dest + "\n");
-                    }) ;
+                    System.out.println("Please Enter Destination: ");
                     String dest = input.next();
                     Node source = node.get(start);
                     Node destination = node.get(dest);
-                    List<Node> path = calc.getRoute(source, destination);
-                    for(int i = 0; i < path.size(); i++) {
-                        System.out.println(i + 1 + " " + path.get(i).getName());
-                    }
                     
-                    //System.out.println("\nFrom: " + start + " to: " + dest);
+                    Calc.getRoute(source, destination);
+                    
                     break;
                 case 3:
                     quit = true;
