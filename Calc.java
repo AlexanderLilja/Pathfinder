@@ -65,28 +65,14 @@ public class Calc {
                     }
                     
                     //AT THE END OF EACH LOOP SETTING COSTS FOR EACH NEIGHBOUR
-                    neighbour.set_gcost(gCost);
+                    neighbour.setGcost(gCost);
                     double hCost = neighbour.calcDistance(goal);
-                    neighbour.set_hcost(hCost);
+                    neighbour.setHcost(hCost);
                     //ALSO SETTING VALUE OF CURRENT TO PREVIOUS
                     neighbour.setPrevious(current);
                     
                 }
-            }
-            
+            }   
         }
-        
-        
-        
-        
-
     }
 }
-   
-
-    
-        
-
-
-    
-

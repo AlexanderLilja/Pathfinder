@@ -63,12 +63,12 @@ public class Node {
         return gCost;
     }
     
-    public void set_gcost(double gcost){
+    public void setGcost(double gcost){
         this.gCost = gcost;
         this.updateTotalCost();
     }
     
-    public void set_hcost(double hcost){
+    public void setHcost(double hcost){
         this.hCost = hcost;
         this.updateTotalCost();
     }
