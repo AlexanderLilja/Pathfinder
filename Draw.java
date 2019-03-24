@@ -1,22 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pathfinder;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
-/**
- *
- * @author Alexander
- */
 public class Draw {
      
-    //      ------------
-    //      GRAPH METHOD
-    //      ------------
     static HashMap<String, Node> createNodes()
     {
         HashMap<String, Node> nodes = new HashMap<>();
@@ -56,9 +43,6 @@ public class Draw {
         return nodes;
     }
     
-    //      ---------------------------------------------------
-    //      PRINT METHOD FOR SEEING THE STATIONS AND NEIGHBOURS
-    //      ---------------------------------------------------
     static void showNodesAndLinks(HashMap<String, Node> node){
         
         for(String keys : node.keySet()){
@@ -72,28 +56,6 @@ public class Draw {
             }
         }
         System.out.print("\n");
-        
-        
     }
-    
-    //      -------------------------------
-    //      PRINT METHOD FOR PRINTING ROUTE
-    //      -------------------------------
-    static void printRoute(Node current){
-        
-        //CREATING ARRAYLIST FOR STORING PATH
-        LinkedList<Node> route = new LinkedList();
-        
-        while(current != null){
-            route.addFirst(current);
-            current = current.getPrevious();
-        }
-        
-        for(int i = 0; i < route.size(); i++){
-            
-            System.out.println(i + 1 + ". " + route.get(i).getName());
-       
-        }
-        System.out.print("\n");
-    }
+
 }

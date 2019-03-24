@@ -1,28 +1,19 @@
 package pathfinder;
+
 import java.util.*;
 
-/**
- *
- * @author Alexander
- */
 public class Node {
-    
-    //      --------------------------------
-    //      BASIC VARIABLES NEEDED FOR NODES
-    //      --------------------------------
+
     private String name;
     private double latitude;
     private double longitude;
     private double gCost;
     private double hCost;
     private double totalCost;
-    private Node previous;
+    public Node previous;
     private ArrayList<Node> neighbours;
     
-    
-    //      -----------
-    //      CONSTRUCTOR
-    //      -----------
+
     public Node(String name, double latitude, double longitude){
         this.name = name;
         this.latitude = latitude;
@@ -35,10 +26,6 @@ public class Node {
     }
     
     
-    //      --------------------------------------
-    //      GET & SET METHODS USED FOR CONSTRUCTOR
-    //      --------------------------------------
-
     public String getName(){
         return name;
     }
@@ -89,10 +76,7 @@ public class Node {
     public ArrayList<Node> getNeighbours(){
         return this.neighbours;
     }
-    
-    //      -----------------------------------------------
-    //      METHOD USED FOR GETTING GCOST & HCOST FOR NODES
-    //      -----------------------------------------------
+
     public double calcDistance(Node target){
 
         double lon1 = this.longitude * Math.PI/180.0;

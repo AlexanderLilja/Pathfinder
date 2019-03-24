@@ -1,27 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pathfinder;
 
-
 import java.util.ArrayList;
+import java.util.LinkedList;
 
-/**
- *
- * @author Alexander
- */
 public class Calc {
      
-    //      --------------------------------------
-    //      A* ALGORITHM FINALLY WORKING ITS MAGIC
-    //      --------------------------------------
     static void getRoute(Node _start, Node goal){
         
         System.out.println("");
         System.out.println("Route from " + _start.getName() + " to " + goal.getName());
         System.out.println("");
+        
         //CREATING OPEN AND CLOSED LISTS FOR KEEPING TRACK OF NODES
         ArrayList<Node> open = new ArrayList<>();
         ArrayList<Node> closed = new ArrayList<>();
@@ -40,7 +29,7 @@ public class Calc {
             
             //REACHED GOAL IF CURRENT == GOAL
             if(current == goal){
-                Draw.printRoute(current);
+                printRoute(current);
                 break;
             }
             //PRETTY STRAIGHTFORWARD JUST TO KEEP TRACK OF NODES
@@ -50,6 +39,7 @@ public class Calc {
             //LOOP THROUGH NEIGHBOURS FOR THE CURRENT NODE
             //UPDATING COSTS FOR EACH NODE THAT IS AVAILABLE
             ArrayList<Node> neighbours = current.getNeighbours();
+            
             for(int i = 0; i < neighbours.size(); i++){
                 Node neighbour = neighbours.get(i);
                 
@@ -70,9 +60,26 @@ public class Calc {
                     neighbour.setHcost(hCost);
                     //ALSO SETTING VALUE OF CURRENT TO PREVIOUS
                     neighbour.setPrevious(current);
-                    
+                   
                 }
             }   
         }
+    }
+        
+    static void printRoute(Node current){
+        
+        LinkedList<Node> route = new LinkedList();
+        
+        while(current != null){
+            route.addFirst(current);
+            current = current.getPrevious();
+        }
+        
+        for(int i = 0; i < route.size(); i++){
+            
+            System.out.println(i + 1 + ". " + route.get(i).getName());
+       
+        }
+        System.out.print("\n");
     }
 }
